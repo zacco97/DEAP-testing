@@ -3,11 +3,8 @@ import numpy as np
 import time
 import random
 import logging
-
-def make_value(individual):
-    time.sleep(1.0)
-    val = np.sin(individual[0]) + np.cos(individual[1])
-    return val
+import subprocess
+import json
 
 
 def create_individuals(df):
@@ -18,7 +15,10 @@ def create_individuals(df):
 
 
 def evaluate(individual):
-    fitness = make_value(individual)
+    subprocess.call(["py", "func.py", f"{individual}"])
+    f = open('data.json', "r")
+    data = json.loads(f.read())
+    fitness = data["val"]
     return fitness,
 
 
@@ -87,7 +87,7 @@ def eaSimple_modified(population, toolbox, cxpb, mutpb, ngen, stats=None,
     return population
 
 
-def genetic_algorithm(df, population_size=15, num_bests=10, ngen=10, CXPB=0.2, MUTPB=0.2, logger=None):
+def genetic_algorithm(df, population_size=20, num_bests=10, ngen=10, CXPB=0.2, MUTPB=0.2, logger=None):
 
     creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
     creator.create("Individual", list, fitness=creator.FitnessMin)
