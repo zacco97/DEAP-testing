@@ -1,0 +1,5 @@
+{
+    "Rosenbrock function":"id1", 
+    "sin(x) + cos(y)":"id2", 
+    "(x^2 + y - 11)^2 + (x + y^2 - 7)^2":"id3"
+}
