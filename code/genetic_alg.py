@@ -1,8 +1,6 @@
-from deap import base, creator, tools, algorithms
+from deap import base, creator, tools
 import numpy as np
-import time
 import random
-import logging
 import subprocess
 import json
 
@@ -15,8 +13,8 @@ def create_individuals(df):
 
 
 def evaluate(individual):
-    subprocess.call(["py", "func.py", f"{individual}"])
-    f = open('data.json', "r")
+    subprocess.call(["py", "code/func.py", f"{individual}"])
+    f = open('code/data.json', "r")
     data = json.loads(f.read())
     fitness = data["val"]
     return fitness,
@@ -52,7 +50,7 @@ def eaSimple_modified(population, toolbox, cxpb, mutpb, ngen, stats=None,
     if halloffame is not None:
         halloffame.update(population)
 
-    record = stats.compile(population) if stats else {}
+    # record = stats.compile(population) if stats else {}
     # logbook.record(gen=0, nevals=len(invalid_ind), **record)
     
     if logger:
@@ -87,7 +85,7 @@ def eaSimple_modified(population, toolbox, cxpb, mutpb, ngen, stats=None,
     return population
 
 
-def genetic_algorithm(df, population_size=20, num_bests=10, ngen=10, CXPB=0.2, MUTPB=0.2, logger=None):
+def genetic_algorithm(df, population_size=20, num_bests=10, ngen=50, CXPB=0.2, MUTPB=0.2, logger=None):
 
     creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
     creator.create("Individual", list, fitness=creator.FitnessMin)
