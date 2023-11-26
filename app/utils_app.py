@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import cm 
 import plotly.graph_objs as go
+import plotly.express as px
 import pandas as pd 
 plt.style.use("ggplot")
 
@@ -54,3 +55,11 @@ def generate_dataframe(min_max_x, min_max_y, STEP):
     X_1, Y_1 = x.flatten(), y.flatten()
     df = pd.DataFrame({"X": X_1, "Y": Y_1})
     return df
+
+def  get_parallel_coodi(df):
+    fig = px.parallel_coordinates(df, color="species_id",
+                                  dimensions=['sepal_width', 'sepal_length', 'petal_width',
+                                            'petal_length'],
+                                  color_continuous_scale=px.colors.diverging.Tealrose,
+                                  color_continuous_midpoint=2)
+    return fig

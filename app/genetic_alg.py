@@ -85,7 +85,7 @@ def eaSimple_modified(population, toolbox, cxpb, mutpb, ngen, stats=None,
     return population
 
 
-def genetic_algorithm(df, population_size=20, num_bests=10, ngen=50, CXPB=0.2, MUTPB=0.2, logger=None, id=None):
+def genetic_algorithm(df, population_size=20, num_bests=10, ngen=1, CXPB=0.2, MUTPB=0.2, logger=None, id=None):
 
     creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
     creator.create("Individual", list, fitness=creator.FitnessMin)
