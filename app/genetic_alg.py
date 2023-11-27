@@ -3,6 +3,7 @@ import numpy as np
 import random
 import subprocess
 import json
+import pandas as pd
 
 
 def create_individuals(df):
@@ -14,7 +15,7 @@ def create_individuals(df):
 
 def evaluate(individual, id):
     subprocess.call(["py", "app/func.py", f"{individual}", f"{id}"])
-    f = open('app/data.json', "r")
+    f = open('saves/data.json', "r")
     data = json.loads(f.read())
     fitness = data["val"]
     return fitness,
@@ -54,9 +55,10 @@ def eaSimple_modified(population, toolbox, cxpb, mutpb, ngen, stats=None,
     # logbook.record(gen=0, nevals=len(invalid_ind), **record)
     
     if logger:
-        logger.info({"gen":0, "nevals":len(invalid_ind), "hof":halloffame.items[0]})
+        logger.info({"gen":0, "nevals":len(invalid_ind), "hof":halloffame.items})
     
     # Begin the generational process
+    df = pd.DataFrame([])
     for gen in range(1, ngen + 1):
         # Select the next generation individuals
         offspring = toolbox.select(population, len(population))
@@ -80,12 +82,17 @@ def eaSimple_modified(population, toolbox, cxpb, mutpb, ngen, stats=None,
 
         # logbook.record(gen=gen, nevals=len(invalid_ind), **record)
         if logger:
-            logger.info({"gen":gen, "nevals":len(invalid_ind), "hof":halloffame.items[0]})
+            logger.info({"gen":gen, "nevals":len(invalid_ind), "hof":halloffame.items})
+        temp_df = pd.DataFrame({
+            "gen":gen,
+            "individuals":halloffame.items
+        })
+        df = pd.concat([df, temp_df])
+        
+    return population, df
 
-    return population
 
-
-def genetic_algorithm(df, population_size=20, num_bests=10, ngen=1, CXPB=0.2, MUTPB=0.2, logger=None, id=None):
+def genetic_algorithm(df, population_size=20, num_bests=10, ngen=4, CXPB=0.2, MUTPB=0.2, logger=None, id=None):
 
     creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
     creator.create("Individual", list, fitness=creator.FitnessMin)
@@ -102,11 +109,11 @@ def genetic_algorithm(df, population_size=20, num_bests=10, ngen=1, CXPB=0.2, MU
     population = toolbox.population(n=population_size)
 
     hof = tools.HallOfFame(num_bests)
-    population = eaSimple_modified(
+    population, df = eaSimple_modified(
         population, toolbox, cxpb=CXPB, mutpb=MUTPB, ngen=ngen, halloffame=hof, logger=logger)
 
     # Get the best individuals found.
     best_individuals = hof.items
 
     # Return the best individuals.
-    return best_individuals
+    return best_individuals, df

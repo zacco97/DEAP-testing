@@ -51,7 +51,7 @@ def main():
     df = pd.DataFrame({"X": X_1, "Y": Y_1})
     
     best_individuals = genetic_algorithm(df, logger=logger)
-    print(best_individuals)
+    # print(best_individuals)
     best_individuals = np.asarray(best_individuals).T
     plotting(X, Y, Z, best=best_individuals)
     

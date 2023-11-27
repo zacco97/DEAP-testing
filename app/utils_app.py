@@ -48,6 +48,7 @@ def get_plot(option, options, min_max_x, min_max_y, STEP):
     
     return fig, id
 
+
 def generate_dataframe(min_max_x, min_max_y, STEP):
     x = np.arange(min_max_x[0], min_max_x[1], STEP)
     y = np.arange(min_max_y[0], min_max_y[1], STEP)
@@ -56,10 +57,27 @@ def generate_dataframe(min_max_x, min_max_y, STEP):
     df = pd.DataFrame({"X": X_1, "Y": Y_1})
     return df
 
+
 def  get_parallel_coodi(df):
-    fig = px.parallel_coordinates(df, color="species_id",
-                                  dimensions=['sepal_width', 'sepal_length', 'petal_width',
-                                            'petal_length'],
-                                  color_continuous_scale=px.colors.diverging.Tealrose,
-                                  color_continuous_midpoint=2)
+    df['index1'] = df.index
+    # df = df.drop('individuals', axis=1)
+    pivoted_df = df.pivot(index='index1', columns='gen', values='z')
+
+    # Reset the index to make 'individuals' a regular column
+    pivoted_df.reset_index(inplace=True)
+
+    # Rename the columns if needed
+    gen_names = [f'gen_{col}' for col in pivoted_df.columns[1:]]
+    pivoted_df.columns = ['individuals'] + gen_names 
+    print(pivoted_df)
+    
+    fig = px.parallel_coordinates(pivoted_df, color=gen_names[-1],
+                                  dimensions=gen_names,
+                                  color_continuous_scale=px.colors.diverging.Armyrose_r)
     return fig
+
+
+def get_z_value(option, options, df):
+    func, _ = get_func(option, options)
+    df["z"] = df.apply(lambda row : func(row["individuals"][0], row["individuals"][1]), axis=1)
+    return df

@@ -18,7 +18,6 @@ if __name__ == "__main__":
     id = str(sys.argv[1])
     
     val = make_value(individual, id)
-    print(val)
-    with open('app/data.json', 'w') as f:
+    with open('saves/data.json', 'w') as f:
         json.dump({"val":val}, f)
     
