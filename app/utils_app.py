@@ -71,11 +71,28 @@ def  get_parallel_coodi(df):
     pivoted_df.columns = ['individuals'] + gen_names 
     print(pivoted_df)
     
-    fig = px.parallel_coordinates(pivoted_df, color=gen_names[-1],
-                                  dimensions=gen_names,
-                                  color_continuous_scale=px.colors.diverging.Armyrose_r)
+    dimensions = []
+    for i, col in enumerate(gen_names):
+        dimension = dict(range = [np.min(pivoted_df[gen_names[-1]]), np.max(pivoted_df[gen_names[0]])],
+                         label = col,
+                         values = pivoted_df[f"{col}"])
+        dimensions.append(dimension)
+    fig = go.Figure(data=go.Parcoords(
+        line = dict(color = pivoted_df[f'{gen_names[-1]}'],
+                    colorscale = 'Portland_r',
+                    showscale = True,
+                    cmin = np.min(pivoted_df[f'{gen_names[-1]}']),
+                    cmax = np.max(pivoted_df[f'{gen_names[-1]}'])),
+             dimensions = list(dimensions)))
+    fig.update_layout(margin={"b": 0, "l": 30, "r": 0 })
+    # fig = px.parallel_coordinates(pivoted_df, color=gen_names[-1],
+    #                               dimensions=gen_names,
+    #                               color_continuous_scale=px.colors.diverging.Armyrose_r)
     return fig
 
+def get_box_plot(df):
+    fig = px.box(df, x="gen", y="z", points="all")
+    return fig
 
 def get_z_value(option, options, df):
     func, _ = get_func(option, options)
